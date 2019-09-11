@@ -18,10 +18,19 @@ func fileinit():
 			"",
 			"Speed comparisons of various syntax alternatives within the GDScript language (Godot game engine).  All code is within [benchmarks.gd](benchmarks.gd), including funcs referenced in results table.",
 			"",
-			"```Godot version: %s```" % Engine.get_version_info()["string"],
+			"## To Run Tests Yourself",
+			"",
+			"* Open the project in Godot",
+			"* Click the lone node in the Scene/Node panel",
+			"* Click the unchecked box in the Inspector for the exported variable 'Click To Run'",
+			"* Wait several seconds for the tests to run (Godot editor may appear frozen during this time)",
+			"",
+			"The script is a 'tool' and clicking this exported variable will trigger a setget function which actually runs the tests.  The results will be printed in the standard output and written to your disk as README.md (clobbering the existing README.md)",
 			"",
 			"## Results",
-			""
+			"",
+			"```Godot version: %s```" % Engine.get_version_info()["string"],
+			"",
 			]:
 		outfile.store_string("%s\n" % line)
 
