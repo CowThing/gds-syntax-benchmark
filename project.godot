@@ -19,6 +19,10 @@ config/name="gds-syntax-benchmark"
 run/main_scene="res://benchmarks.tscn"
 config/icon="res://icon.png"
 
+[debug]
+
+gdscript/warnings/enable=false
+
 [rendering]
 
 quality/driver/driver_name="GLES2"
