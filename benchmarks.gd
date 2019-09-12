@@ -12,7 +12,7 @@ func fileinit():
 	outfile = File.new()
 	if outfile.open("res://README.md", File.WRITE) != 0:
 		print("ERROR OPENING FILE")
-		return
+		return 1
 	for line in [
 			"# GDScript Syntax Benchmarks",
 			"",
@@ -33,22 +33,30 @@ func fileinit():
 			"",
 			]:
 		outfile.store_string("%s\n" % line)
+	return 0
 
 func printwrite(s):
 	print(s)
 	outfile.store_string("%s\n" % s)
 
-func run(junk): # TODO include Godot version in file name
-	fileinit()
+func _ready():
+	run(0)
+
+func run(junk):
+	print()
+	if fileinit():
+		print("ERROR OPENING FILE")
+		return 1
 	bigarray = []
 	bigarray.resize(1e6)
-	timeit("warmup", true) # warmup
+	timeit("warmup", true)
 	compare_funcs_time("array_append", "array_index")
 	compare_funcs_time("array_len", "array_size")
 	compare_funcs_time("array_front", "array_izero")
 	compare_funcs_time("array_back", "array_ineg")
 	compare_funcs_time("var_script", "var_func")
 	compare_funcs_time("var_script", "var_self")
+	compare_funcs_time("iter_for_range", "iter_for_int")
 	compare_funcs_time("iter_for", "iter_while")
 	compare_funcs_time("matches", "ifs")
 	compare_funcs_time("parray_appendrw", "array_appendrw")
@@ -100,61 +108,69 @@ func compare_funcs_time(funcname1, funcname2):
 	printwrite("    " + result)
 
 func warmup():
-	for i in range(1e6): pass
+	for i in 1e6: pass
 
 func array_append():
 	var a : Array = []
-	for i in range(1e6): a.append(0)
+	for i in 1e6: a.append(0)
 
 func array_index():
 	var a : Array = []
 	a.resize(1e6)
-	for i in range(1e6): a[i] = 0
+	for i in 1e6: a[i] = 0
 		
 func array_len():
-	for i in range(1e6): len(bigarray)
+	for i in 1e6: len(bigarray)
 		
 func array_size():
-	for i in range(1e6): bigarray.size()
+	for i in 1e6: bigarray.size()
 
 func array_front():
-	for i in range(1e6): bigarray.front()
+	for i in 1e6: bigarray.front()
 		
 func array_izero():
-	for i in range(1e6): bigarray[0]
+	for i in 1e6: bigarray[0]
 
 func array_back():
-	for i in range(1e6): bigarray.back()
+	for i in 1e6: bigarray.back()
 		
 func array_ineg():
-	for i in range(1e6): bigarray[-1]
+	for i in 1e6: bigarray[-1]
 
 func var_script():
-	for i in range(1e6):
+	for i in 1e6:
 		testvar # read
 		testvar = 0 # write
 	
 func var_func():
 	var localvar : int = 0
-	for i in range(1e6):
+	for i in 1e6:
 		localvar # read
 		localvar = 0 # write
 		
 func var_self():
-	for i in range(1e6):
+	for i in 1e6:
 		self.testvar # read
 		self.testvar = 0 # write
 
+func iter_for_range():
+	for i in range(1e6):
+		for x in range(1): pass
+
+func iter_for_int():
+	for i in 1e6:
+		for x in 1: pass
+
 func iter_for():
-	for i in range(1e6): pass
-	
+	for i in 1e6: pass
+
 func iter_while():
 	var i : int = 0
 	while i < 1e6: i += 1
 
 func matches():
 	var x : int = 0
-	for i in range(1e6):
+	for i in 1e6:
 		match x:
 			1: pass
 			2: pass
@@ -162,7 +178,7 @@ func matches():
 
 func ifs():
 	var x : int = 0
-	for i in range(1e6):
+	for i in 1e6:
 		if x == 1: pass
 		elif x == 2: pass
 		else: pass
@@ -184,48 +200,48 @@ func array_appendrw():
 		i += 1
 
 func dontcallfunc():
-	for i in range(1e6): pass
+	for i in 1e6: pass
 
 func passonce(): pass
 func callfunc():
-	for i in range(1e6): passonce()
+	for i in 1e6: passonce()
 
 func inteval():
 	var x : int = 1
-	for i in range(1e6):
+	for i in 1e6:
 		if x == 0: pass
 
 func inteval_auto():
 	var x : int = 0
-	for i in range(1e6):
+	for i in 1e6:
 		if x: pass
 
 func arrayeval():
 	var a : Array = [1]
-	for i in range(1e6):
+	for i in 1e6:
 		if a == []: pass
 
 func arrayeval_auto():
 	var a : Array = []
-	for i in range(1e6):
+	for i in 1e6:
 		if a: pass
 		
 func dicteval():
 	var d : Dictionary = {0:0}
-	for i in range(1e6):
+	for i in 1e6:
 		if d == {}: pass
 
 func dicteval_auto():
 	var d : Dictionary = {}
-	for i in range(1e6):
+	for i in 1e6:
 		if d: pass
 
 func nulleval():
-	var x : int = 0
-	for i in range(1e6):
-		if x == null: pass
+	var x : Object = null
+	for i in 1e6:
+		if x != null: pass
 	
 func nulleval_auto():
-	var x : int = 0
-	for i in range(1e6):
+	var x : Object = null
+	for i in 1e6:
 		if x: pass
